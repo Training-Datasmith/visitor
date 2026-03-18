@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -34,7 +36,7 @@ class Visit extends Model
         'request'   => 'array',
         'languages' => 'array',
         'headers'   => 'array',
-		'geo_raw' => 'array',
+        'geo_raw' => 'array',
     ];
 
     /**

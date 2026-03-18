@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Shetabit\Visitor\Contracts\{UserAgentParser,GeoIpResolver};
+use Shetabit\Visitor\Contracts\{GeoIpResolver, UserAgentParser};
 use Shetabit\Visitor\Exceptions\DriverNotFoundException;
 use Shetabit\Visitor\Models\Visit;
 
@@ -30,8 +32,8 @@ class Visitor implements UserAgentParser, GeoIpResolver
      * @var object
      */
     protected $driverInstance;
-    
-	/**
+
+    /**
      * Resolver name.
      *
      * @var string
@@ -70,7 +72,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     public function __construct(Request $request, /**
      * Configuration.
      */
-    protected $config)
+        protected $config)
     {
         $this->request = $request;
         $this->except = $this->config['except'];
@@ -82,7 +84,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      * Change the driver and the resolver on the fly.
      *
      * @param $driver
-	 * @param $resolver
+     * @param $resolver
      *
      * @return $this
      *
@@ -93,8 +95,8 @@ class Visitor implements UserAgentParser, GeoIpResolver
         $this->driver = $driver;
         $this->validateDriver();
 
-		$this->resolver = $resolver;
-		$this->validateResolver();
+        $this->resolver = $resolver;
+        $this->validateResolver();
 
         return $this;
     }
@@ -102,7 +104,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve request's data
      */
-    public function request() : array
+    public function request(): array
     {
         return $this->request->all();
     }
@@ -110,7 +112,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve user's ip.
      */
-    public  function ip() : ?string
+    public function ip(): ?string
     {
         return $this->request->ip();
     }
@@ -118,7 +120,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve request's url
      */
-    public function url() : string
+    public function url(): string
     {
         return $this->request->fullUrl();
     }
@@ -126,7 +128,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve request's referer
      */
-    public function referer() : ?string
+    public function referer(): ?string
     {
         return $_SERVER['HTTP_REFERER'] ?? null;
     }
@@ -134,7 +136,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve request's method.
      */
-    public function method() : string
+    public function method(): string
     {
         return $this->request->getMethod();
     }
@@ -142,7 +144,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve http headers.
      */
-    public function httpHeaders() : array
+    public function httpHeaders(): array
     {
         return $this->request->headers->all();
     }
@@ -150,7 +152,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve agent.
      */
-    public function userAgent() : string
+    public function userAgent(): string
     {
         return $this->request->userAgent() ?? '';
     }
@@ -161,7 +163,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    public function device() : string
+    public function device(): string
     {
         return $this->getDriverInstance()->device();
     }
@@ -172,7 +174,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    public function platform() : string
+    public function platform(): string
     {
         return $this->getDriverInstance()->platform();
     }
@@ -183,7 +185,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    public function browser() : string
+    public function browser(): string
     {
         return $this->getDriverInstance()->browser();
     }
@@ -194,31 +196,30 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    public function languages() : array
+    public function languages(): array
     {
         return $this->getDriverInstance()->languages();
     }
 
-	/**
-	* 
-	*/
-	public function resolve(string $ip): ?array
-	{
-		if(!($this->config['geoip'] ?? false)){
-			return null;
-		}
-		return $this->getResolverInstance()->resolve($ip);
-	}
+    /**
+    *
+    */
+    public function resolve(string $ip): ?array
+    {
+        if (!($this->config['geoip'] ?? false)) {
+            return null;
+        }
+        return $this->getResolverInstance()->resolve($ip);
+    }
 
-
-	/**
-	*
-	*/
-	public function geolocation(): ?array
-	{
-		$ip = $this->ip();
-		return $ip ? $this->resolve($ip) : null;
-	}
+    /**
+    *
+    */
+    public function geolocation(): ?array
+    {
+        $ip = $this->ip();
+        return $ip ? $this->resolve($ip) : null;
+    }
 
     /**
      * Set visitor (user)
@@ -236,7 +237,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve visitor (user)
      */
-    public function getVisitor() : ?Model
+    public function getVisitor(): ?Model
     {
         return $this->visitor;
     }
@@ -251,7 +252,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
                 return;
             }
         }
-
 
         $data = $this->prepareLog();
 
@@ -299,7 +299,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    protected function prepareLog() : array
+    protected function prepareLog(): array
     {
         $log =  [
             'method' => $this->method(),
@@ -314,14 +314,14 @@ class Visitor implements UserAgentParser, GeoIpResolver
             'browser' => $this->browser(),
             'ip' => $this->ip(),
             'visitor_id' => $this->getVisitor()?->id,
-            'visitor_type' => $this->getVisitor()?->getMorphClass()
+            'visitor_type' => $this->getVisitor()?->getMorphClass(),
         ];
-		
-		if(!empty($this->config['geoip'])) {
-			$log['geo_raw'] = $this->geolocation();
-		}
-		
-		return $log;
+
+        if (!empty($this->config['geoip'])) {
+            $log['geo_raw'] = $this->geolocation();
+        }
+
+        return $log;
     }
 
     /**

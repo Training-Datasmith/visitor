@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Drivers;
 
-use UAParser\Parser;
 use Illuminate\Http\Request;
 use Shetabit\Visitor\Contracts\UserAgentParser;
+use UAParser\Parser;
 
 class UAParser implements UserAgentParser
 {
@@ -33,7 +35,7 @@ class UAParser implements UserAgentParser
     /**
      * Retrieve device's name.
      */
-    public function device() : string
+    public function device(): string
     {
         return $this->parser->device->family;
     }
@@ -41,7 +43,7 @@ class UAParser implements UserAgentParser
     /**
      * Retrieve platform's name.
      */
-    public function platform() : string
+    public function platform(): string
     {
         return $this->parser->os->family;
     }
@@ -49,7 +51,7 @@ class UAParser implements UserAgentParser
     /**
      * Retrieve browser's name.
      */
-    public function browser() : string
+    public function browser(): string
     {
         return $this->parser->ua->family;
     }
@@ -57,7 +59,7 @@ class UAParser implements UserAgentParser
     /**
      * Retrieve languages.
      */
-    public function languages() : array
+    public function languages(): array
     {
         $languages = [];
 

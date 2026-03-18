@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Traits;
 
-use Illuminate\Support\Facades\Auth;
 use Shetabit\Visitor\Models\Visit;
-use Illuminate\Database\Eloquent\Builder;
 
 trait CanVisit
 {
@@ -28,7 +28,7 @@ trait CanVisit
         $time = now()->subSeconds($seconds);
 
         return $query->whereHas('visitLogs', function ($query) use ($time): void {
-            $query->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());
+            $query->where(config('visitor.table_name') . '.created_at', '>=', $time->toDateTime());
         });
     }
 
@@ -41,9 +41,9 @@ trait CanVisit
         $time = now()->subSeconds($seconds);
 
         return $this->visitLogs()->whereHasMorph('user', [static::class], function ($query) use ($time): void {
-                $query
-                    ->where('user_id', $this->id)
-                    ->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());
-            })->count() > 0;
+            $query
+                ->where('user_id', $this->id)
+                ->where(config('visitor.table_name') . '.created_at', '>=', $time->toDateTime());
+        })->count() > 0;
     }
 }

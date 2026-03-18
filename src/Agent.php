@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor;
 
 use BadMethodCallException;
@@ -11,7 +13,6 @@ use Random\RandomException;
 
 class Agent extends MobileDetect
 {
-
     /**
      * List of desktop devices.
      *
@@ -121,7 +122,7 @@ class Agent extends MobileDetect
      */
     public function browser(): bool|string
     {
-        return $this->retrieveUsingCacheOrResolve('visitor.browser', fn() => $this->findDetectionRulesAgainstUserAgent(
+        return $this->retrieveUsingCacheOrResolve('visitor.browser', fn () => $this->findDetectionRulesAgainstUserAgent(
             $this->mergeRules(static::$additionalBrowsers, MobileDetect::getBrowsers())
         ));
     }
@@ -175,7 +176,7 @@ class Agent extends MobileDetect
                         return $key ?: reset($this->matchesArray);
                     }
                 }
-            } else if ($this->match($regex, $userAgent)) {
+            } elseif ($this->match($regex, $userAgent)) {
                 return $key ?: reset($this->matchesArray);
             }
 
@@ -214,7 +215,7 @@ class Agent extends MobileDetect
      */
     public function platform(): bool|string
     {
-        return $this->retrieveUsingCacheOrResolve('visitor.platform', fn() => $this->findDetectionRulesAgainstUserAgent(
+        return $this->retrieveUsingCacheOrResolve('visitor.platform', fn () => $this->findDetectionRulesAgainstUserAgent(
             $this->mergeRules(static::$additionalOperatingSystems, MobileDetect::getOperatingSystems())
         ));
     }
@@ -273,22 +274,22 @@ class Agent extends MobileDetect
     public function deviceType(): string
     {
         if ($this->isDesktop()) {
-            return "desktop";
+            return 'desktop';
         }
 
         if ($this->isPhone()) {
-            return "phone";
+            return 'phone';
         }
 
         if ($this->isTablet()) {
-            return "tablet";
+            return 'tablet';
         }
 
         if ($this->isRobot()) {
-            return "robot";
+            return 'robot';
         }
 
-        return "other";
+        return 'other';
     }
 
     /**

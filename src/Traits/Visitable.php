@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Traits;
 
-use Illuminate\Support\Facades\Auth;
-use Shetabit\Visitor\Models\Visit;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Shetabit\Visitor\Models\Visit;
 
 trait Visitable
 {

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Shetabit\Visitor\Tests\Mocks\Drivers\BarDriver;
 
 class TestCase extends BaseTestCase
 {

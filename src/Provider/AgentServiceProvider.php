@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Provider;
 
 use Illuminate\Support\ServiceProvider;
@@ -19,7 +21,7 @@ class AgentServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton('agent', fn($app) => new Agent($app['request']->server()));
+        $this->app->singleton('agent', fn ($app) => new Agent($app['request']->server()));
 
         $this->app->alias('agent', Agent::class);
     }

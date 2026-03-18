@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Middlewares;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class LogVisits
 {

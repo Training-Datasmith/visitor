@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Shetabit\Visitor\Provider;
 
 use Illuminate\Http\Request;
@@ -65,6 +67,6 @@ class VisitorServiceProvider extends ServiceProvider
      */
     protected function registerMacroHelpers(): void
     {
-        Request::macro('visitor', fn() => app('shetabit-visitor'));
+        Request::macro('visitor', fn () => app('shetabit-visitor'));
     }
 }
