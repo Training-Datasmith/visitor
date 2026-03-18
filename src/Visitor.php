@@ -16,12 +16,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
      * @var array
      */
     protected $except;
-    /**
-     * Configuration.
-     *
-     * @var array
-     */
-    protected $config;
 
     /**
      * Driver name.
@@ -71,12 +65,15 @@ class Visitor implements UserAgentParser, GeoIpResolver
      * @param $config
      *
      * @throws \Exception
+     * @param mixed[] $config
      */
-    public function __construct(Request $request, $config)
+    public function __construct(Request $request, /**
+     * Configuration.
+     */
+    protected $config)
     {
         $this->request = $request;
-        $this->config = $config;
-        $this->except = $config['except'];
+        $this->except = $this->config['except'];
         $this->via($this->config['default'], $this->config['resolver']);
         $this->setVisitor($request->user());
     }
@@ -91,7 +88,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      *
      * @throws \Exception
      */
-    public function via($driver, $resolver)
+    public function via($driver, $resolver): static
     {
         $this->driver = $driver;
         $this->validateDriver();
@@ -104,8 +101,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve request's data
-     *
-     * @return array
      */
     public function request() : array
     {
@@ -114,8 +109,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve user's ip.
-     *
-     * @return string|null
      */
     public  function ip() : ?string
     {
@@ -124,8 +117,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve request's url
-     *
-     * @return string
      */
     public function url() : string
     {
@@ -134,8 +125,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve request's referer
-     *
-     * @return string|null
      */
     public function referer() : ?string
     {
@@ -144,8 +133,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve request's method.
-     *
-     * @return string
      */
     public function method() : string
     {
@@ -154,8 +141,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve http headers.
-     *
-     * @return array
      */
     public function httpHeaders() : array
     {
@@ -164,8 +149,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve agent.
-     *
-     * @return string
      */
     public function userAgent() : string
     {
@@ -175,7 +158,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve device's name.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -187,7 +169,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve platform's name.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -199,7 +180,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve browser's name.
      *
-     * @return string
      *
      * @throws \Exception
      */
@@ -211,7 +191,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Retrieve languages.
      *
-     * @return array
      *
      * @throws \Exception
      */
@@ -244,11 +223,10 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Set visitor (user)
      *
-     * @param Model|null $user
      *
      * @return $this
      */
-    public function setVisitor(?Model $user)
+    public function setVisitor(?Model $user): static
     {
         $this->visitor = $user;
 
@@ -257,8 +235,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Retrieve visitor (user)
-     *
-     * @return Model|null
      */
     public function getVisitor() : ?Model
     {
@@ -267,8 +243,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
 
     /**
      * Create a visit log.
-     *
-     * @param Model $model
      */
     public function visit(Model $model = null)
     {
@@ -282,18 +256,15 @@ class Visitor implements UserAgentParser, GeoIpResolver
         $data = $this->prepareLog();
 
         if (null !== $model && method_exists($model, 'visitLogs')) {
-            $visit = $model->visitLogs()->create($data);
-        } else {
-            $visit = Visit::create($data);
+            return $model->visitLogs()->create($data);
         }
 
-        return $visit;
+        return Visit::create($data);
     }
 
     /**
      * Retrieve online visitors.
      *
-     * @param string $model
      * @param int $seconds
      */
     public function onlineVisitors(string $model, $seconds = 180)
@@ -304,22 +275,20 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Determine if given visitor or current one is online.
      *
-     * @param Model|null $visitor
      * @param int $seconds
-     *
      * @return bool
      */
     public function isOnline(?Model $visitor = null, $seconds = 180)
     {
         $time = now()->subSeconds($seconds);
 
-        $visitor = $visitor ?? $this->getVisitor();
+        $visitor ??= $this->getVisitor();
 
-        if (empty($visitor)) {
+        if (!$visitor instanceof \Illuminate\Database\Eloquent\Model) {
             return false;
         }
 
-        return Visit::whereHasMorph('visitor', get_class($visitor), function ($query) use ($visitor, $time) {
+        return Visit::whereHasMorph('visitor', $visitor::class, function ($query) use ($visitor): void {
             $query->where('visitor_id', $visitor->id);
         })->whereDate('created_at', '>=', $time)->count() > 0;
     }
@@ -327,7 +296,6 @@ class Visitor implements UserAgentParser, GeoIpResolver
     /**
      * Prepare log's data.
      *
-     * @return array
      *
      * @throws \Exception
      */

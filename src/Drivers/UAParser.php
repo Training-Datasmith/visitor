@@ -21,7 +21,6 @@ class UAParser implements UserAgentParser
     /**
      * UAParser constructor.
      *
-     * @param Request $request
      *
      * @throws \UAParser\Exception\FileNotFoundException
      */

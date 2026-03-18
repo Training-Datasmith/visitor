@@ -7,7 +7,6 @@ interface GeoIpResolver
     /**
      * Resolve a given IP address into a GeoIP payload.
      *
-     * @param string $ip
      * @return array|null
      *
      * Example return:

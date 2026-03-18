@@ -22,7 +22,6 @@ trait Visitable
     /**
      * Create a visit log.
      *
-     * @param Model|null $visitor
      *
      * @return mixed
      */

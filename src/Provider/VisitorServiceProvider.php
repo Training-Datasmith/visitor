@@ -10,8 +10,6 @@ class VisitorServiceProvider extends ServiceProvider
 {
     /**
      * Perform post-registration booting of services.
-     *
-     * @return void
      */
     public function boot(): void
     {
@@ -55,7 +53,7 @@ class VisitorServiceProvider extends ServiceProvider
         /**
          * Bind to service container.
          */
-        $this->app->singleton('shetabit-visitor', function () {
+        $this->app->singleton('shetabit-visitor', function (): \Shetabit\Visitor\Visitor {
             $request = app(Request::class);
 
             return new Visitor($request, config('visitor'));
@@ -67,8 +65,6 @@ class VisitorServiceProvider extends ServiceProvider
      */
     protected function registerMacroHelpers(): void
     {
-        Request::macro('visitor', function () {
-            return app('shetabit-visitor');
-        });
+        Request::macro('visitor', fn() => app('shetabit-visitor'));
     }
 }

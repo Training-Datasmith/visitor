@@ -27,7 +27,7 @@ trait CanVisit
     {
         $time = now()->subSeconds($seconds);
 
-        return $query->whereHas('visitLogs', function ($query) use ($time) {
+        return $query->whereHas('visitLogs', function ($query) use ($time): void {
             $query->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());
         });
     }
@@ -35,13 +35,12 @@ trait CanVisit
     /**
      * check if user is online
      * @param int $seconds
-     * @return bool
      */
-    public function isOnline($seconds = 180)
+    public function isOnline($seconds = 180): bool
     {
         $time = now()->subSeconds($seconds);
 
-        return $this->visitLogs()->whereHasMorph('user', [static::class], function ($query) use ($time) {
+        return $this->visitLogs()->whereHasMorph('user', [static::class], function ($query) use ($time): void {
                 $query
                     ->where('user_id', $this->id)
                     ->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());

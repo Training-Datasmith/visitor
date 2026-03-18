@@ -20,8 +20,6 @@ class JenssegersAgent implements UserAgentParser
 
     /**
      * Parser constructor.
-     *
-     * @param Request $request
      */
     public function __construct(Request $request)
     {

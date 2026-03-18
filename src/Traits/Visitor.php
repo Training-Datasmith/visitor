@@ -19,7 +19,6 @@ trait Visitor
 
     /**
      * Create a visit log.
-     * @param Model|null $visitable
      * @return mixed
      */
     public function visit(?Model $visitable = NULL)
@@ -31,13 +30,12 @@ trait Visitor
      * Retrieve online users
      * @param $query
      * @param int $seconds
-     * @return mixed
      */
-    public function scopeOnline($query, $seconds = 180)
+    public function scopeOnline($query, $seconds = 180): void
     {
         $time = now()->subSeconds($seconds);
 
-        $query->whereHas('visits', function ($query) use ($time) {
+        $query->whereHas('visits', function ($query) use ($time): void {
             $query->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());
 
         });
@@ -46,13 +44,12 @@ trait Visitor
     /**
      * check if user is online
      * @param int $seconds
-     * @return bool
      */
-    public function isOnline($seconds = 180)
+    public function isOnline($seconds = 180): bool
     {
         $time = now()->subSeconds($seconds);
 
-        return $this->visits()->whereHasMorph('visitor', [static::class], function ($query) use ($time) {
+        return $this->visits()->whereHasMorph('visitor', [static::class], function ($query) use ($time): void {
                 $query
                     ->where('visitor_id', $this->id)
                     ->where(config('visitor.table_name') . ".created_at", '>=', $time->toDateTime());
