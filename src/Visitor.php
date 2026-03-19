@@ -130,7 +130,7 @@ class Visitor implements UserAgentParser, GeoIpResolver
      */
     public function referer(): ?string
     {
-        return $_SERVER['HTTP_REFERER'] ?? null;
+        return $this->request->header('referer');
     }
 
     /**
