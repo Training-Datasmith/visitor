@@ -1,14 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Provider;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Service_Provider;
 use Shetabit\Visitor\Visitor;
-
-class VisitorServiceProvider extends ServiceProvider
+class Visitor_Service_Provider extends Service_Provider
 {
     /**
      * Perform post-registration booting of services.
@@ -18,30 +16,16 @@ class VisitorServiceProvider extends ServiceProvider
         /**
          * Configurations that needs to be done by user.
          */
-        $this->publishes(
-            [
-                __DIR__.'/../../config/visitor.php' => config_path('visitor.php'),
-            ],
-            'config'
-        );
-
+        $this->publishes([__DIR__ . '/../../config/visitor.php' => config_path('visitor.php')], 'config');
         $timestamp = date('Y_m_d_His', time());
-
-        if (! class_exists('CreateVisitsTable')) {
-            $this->publishes([
-                __DIR__ . '/../../database/migrations/create_visits_table.php.stub' => database_path("/migrations/{$timestamp}_create_visits_table.php"),
-            ], 'migrations');
+        if (!class_exists('CreateVisitsTable')) {
+            $this->publishes([__DIR__ . '/../../database/migrations/create_visits_table.php.stub' => database_path("/migrations/{$timestamp}_create_visits_table.php")], 'migrations');
         }
-
-        if (! class_exists('AddGeoRawToVisitsTable')) {
-            $this->publishes([
-                __DIR__ . '/../../database/migrations/add_geo_raw_to_visits_table.php.stub' => database_path("/migrations/{$timestamp}_add_geo_raw_to_visits_table.php"),
-            ], 'migrations');
+        if (!class_exists('AddGeoRawToVisitsTable')) {
+            $this->publishes([__DIR__ . '/../../database/migrations/add_geo_raw_to_visits_table.php.stub' => database_path("/migrations/{$timestamp}_add_geo_raw_to_visits_table.php")], 'migrations');
         }
-
-        $this->registerMacroHelpers();
+        $this->register_macro_helpers();
     }
-
     /**
      * Register any package services.
      */
@@ -50,23 +34,20 @@ class VisitorServiceProvider extends ServiceProvider
         /**
          * Load default configurations.
          */
-        $this->mergeConfigFrom(__DIR__.'/../../config/visitor.php', 'visitor');
-
+        $this->merge_config_from(__DIR__ . '/../../config/visitor.php', 'visitor');
         /**
          * Bind to service container.
          */
         $this->app->singleton('shetabit-visitor', function (): \Shetabit\Visitor\Visitor {
             $request = app(Request::class);
-
             return new Visitor($request, config('visitor'));
         });
     }
-
     /**
      * Register micros
      */
-    protected function registerMacroHelpers(): void
+    protected function register_macro_helpers(): void
     {
-        Request::macro('visitor', fn () => app('shetabit-visitor'));
+        Request::macro('visitor', fn() => app('shetabit-visitor'));
     }
 }

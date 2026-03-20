@@ -1,10 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Contracts;
 
-interface GeoIpResolver
+interface Geo_Ip_Resolver
 {
     /**
      * Resolve a given IP address into a GeoIP payload.

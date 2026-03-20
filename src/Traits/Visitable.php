@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Shetabit\Visitor\Models\Visit;
-
 trait Visitable
 {
     /**
@@ -14,19 +12,18 @@ trait Visitable
      *
      * @return mixed
      */
-    public function visitLogs()
+    public function visit_logs()
     {
-        return $this->morphMany(Visit::class, 'visitable');
+        return $this->morph_many(Visit::class, 'visitable');
     }
-
     /**
      * Create a visit log.
      *
      *
      * @return mixed
      */
-    public function createVisitLog(?Model $visitor)
+    public function create_visit_log(?Model $visitor)
     {
-        return app('shetabit-visitor')->setVisitor($visitor)->visit($this);
+        return app('shetabit-visitor')->set_visitor($visitor)->visit($this);
     }
 }

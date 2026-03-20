@@ -1,34 +1,29 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Drivers;
 
 use Illuminate\Http\Request;
 use Shetabit\Visitor\Agent;
-use Shetabit\Visitor\Contracts\UserAgentParser;
-
-class JenssegersAgent implements UserAgentParser
+use Shetabit\Visitor\Contracts\User_Agent_Parser;
+class Jenssegers_Agent implements User_Agent_Parser
 {
     /**
      * Request container.
      */
     protected Request $request;
-
     /**
      * Agent parser.
      */
     protected Agent $parser;
-
     /**
      * Parser constructor.
      */
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->parser = $this->initParser();
+        $this->parser = $this->init_parser();
     }
-
     /**
      * Retrieve device's name.
      */
@@ -36,7 +31,6 @@ class JenssegersAgent implements UserAgentParser
     {
         return $this->parser->device();
     }
-
     /**
      * Retrieve platform's name.
      */
@@ -44,7 +38,6 @@ class JenssegersAgent implements UserAgentParser
     {
         return $this->parser->platform();
     }
-
     /**
      * Retrieve browser's name.
      */
@@ -52,7 +45,6 @@ class JenssegersAgent implements UserAgentParser
     {
         return $this->parser->browser();
     }
-
     /**
      * Retrieve languages.
      */
@@ -60,18 +52,15 @@ class JenssegersAgent implements UserAgentParser
     {
         return $this->parser->languages();
     }
-
     /**
      * Initialize userAgent parser.
      */
-    protected function initParser(): Agent
+    protected function init_parser(): Agent
     {
         $parser = new Agent();
-        $userAgent = $this->request->userAgent() ?? '';
-
-        $parser->setUserAgent($userAgent);
-        $parser->setHttpHeaders((array)$this->request->headers);
-
+        $user_agent = $this->request->user_agent() ?? '';
+        $parser->set_user_agent($user_agent);
+        $parser->set_http_headers((array) $this->request->headers);
         return $parser;
     }
 }

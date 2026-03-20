@@ -1,12 +1,10 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
+namespace Shetabit\Visitor\Resolvers\Geo_Ip;
 
-namespace Shetabit\Visitor\Resolvers\GeoIp;
-
-use Shetabit\Visitor\Contracts\GeoIpResolver;
-
-class NullResolver implements GeoIpResolver
+use Shetabit\Visitor\Contracts\Geo_Ip_Resolver;
+class Null_Resolver implements Geo_Ip_Resolver
 {
     public function resolve(string $ip): ?array
     {

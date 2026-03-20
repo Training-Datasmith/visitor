@@ -1,25 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Drivers;
 
 use Illuminate\Http\Request;
-use Shetabit\Visitor\Contracts\UserAgentParser;
-use UAParser\Parser;
-
-class UAParser implements UserAgentParser
+use Shetabit\Visitor\Contracts\User_Agent_Parser;
+use Ua_Parser\Parser;
+class Ua_Parser implements User_Agent_Parser
 {
     /**
      * Request container.
      */
     protected Request $request;
-
     /**
      * Agent parser.
      */
-    protected \UAParser\Result\Client $parser;
-
+    protected \Ua_Parser\Result\Client $parser;
     /**
      * UAParser constructor.
      *
@@ -29,9 +25,8 @@ class UAParser implements UserAgentParser
     public function __construct(Request $request)
     {
         $this->request = $request;
-        $this->parser = $this->initParser();
+        $this->parser = $this->init_parser();
     }
-
     /**
      * Retrieve device's name.
      */
@@ -39,7 +34,6 @@ class UAParser implements UserAgentParser
     {
         return $this->parser->device->family;
     }
-
     /**
      * Retrieve platform's name.
      */
@@ -47,7 +41,6 @@ class UAParser implements UserAgentParser
     {
         return $this->parser->os->family;
     }
-
     /**
      * Retrieve browser's name.
      */
@@ -55,29 +48,25 @@ class UAParser implements UserAgentParser
     {
         return $this->parser->ua->family;
     }
-
     /**
      * Retrieve languages.
      */
     public function languages(): array
     {
         $languages = [];
-
         if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             $lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
             $languages[] = $lang;
         }
-
         return $languages;
     }
-
     /**
      * Initialize userAgent parser.
      *
      * @throws \UAParser\Exception\FileNotFoundException
      */
-    protected function initParser(): \UAParser\Result\Client
+    protected function init_parser(): \Ua_Parser\Result\Client
     {
-        return Parser::create()->parse($this->request->userAgent());
+        return Parser::create()->parse($this->request->user_agent());
     }
 }

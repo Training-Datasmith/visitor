@@ -1,26 +1,22 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace Shetabit\Visitor\Contracts;
 
-interface UserAgentParser
+interface User_Agent_Parser
 {
     /**
      * Retrieve device's name.
      */
     public function device(): string;
-
     /**
      * Retrieve platform's name.
      */
     public function platform(): string;
-
     /**
      * Retrieve browser's name.
      */
     public function browser(): string;
-
     /**
      * Retrieve languages.
      */
