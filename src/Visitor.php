@@ -92,96 +92,118 @@ class Visitor implements User_Agent_Parser, Geo_Ip_Resolver
         return $this;
     }
     /**
-     * Retrieve request's data
+     * Retrieves all input data from the current HTTP request.
+     *
+     * @return array<string, mixed>
      */
     public function request(): array
     {
         return $this->request->all();
     }
     /**
-     * Retrieve user's ip.
+     * Retrieves the visitor's IP address from the current request.
+     *
+     * @return string|null The IP address, or null if it cannot be determined
      */
     public function ip(): ?string
     {
         return $this->request->ip();
     }
     /**
-     * Retrieve request's url
+     * Retrieves the full URL of the current request.
+     *
+     * @return string The full request URL including query string
      */
     public function url(): string
     {
         return $this->request->full_url();
     }
     /**
-     * Retrieve request's referer
+     * Retrieves the HTTP Referer header value from the current request.
+     *
+     * @return string|null The referring URL, or null if no referer header was sent
      */
     public function referer(): ?string
     {
         return $this->request->header('referer');
     }
     /**
-     * Retrieve request's method.
+     * Retrieves the HTTP method (verb) of the current request.
+     *
+     * @return string Uppercase HTTP method (e.g. 'GET', 'POST')
      */
     public function method(): string
     {
         return $this->request->get_method();
     }
     /**
-     * Retrieve http headers.
+     * Retrieves all HTTP headers from the current request.
+     *
+     * @return array<string, string[]> Map of header name to array of values
      */
     public function http_headers(): array
     {
         return $this->request->headers->all();
     }
     /**
-     * Retrieve agent.
+     * Retrieves the raw User-Agent string from the current request.
+     *
+     * @return string The User-Agent header value, or empty string if not present
      */
     public function user_agent(): string
     {
         return $this->request->user_agent() ?? '';
     }
     /**
-     * Retrieve device's name.
+     * Retrieves the detected device type (e.g. 'desktop', 'mobile', 'tablet') from the User-Agent.
      *
+     * @return string Device type name as reported by the configured UA parser driver
      *
-     * @throws \Exception
+     * @throws \Exception If the configured UA parser driver cannot be instantiated
      */
     public function device(): string
     {
         return $this->get_driver_instance()->device();
     }
     /**
-     * Retrieve platform's name.
+     * Retrieves the detected operating system/platform name from the User-Agent.
      *
+     * @return string Platform name (e.g. 'Windows', 'iOS', 'Linux')
      *
-     * @throws \Exception
+     * @throws \Exception If the configured UA parser driver cannot be instantiated
      */
     public function platform(): string
     {
         return $this->get_driver_instance()->platform();
     }
     /**
-     * Retrieve browser's name.
+     * Retrieves the detected browser name from the User-Agent.
      *
+     * @return string Browser name (e.g. 'Chrome', 'Firefox', 'Safari')
      *
-     * @throws \Exception
+     * @throws \Exception If the configured UA parser driver cannot be instantiated
      */
     public function browser(): string
     {
         return $this->get_driver_instance()->browser();
     }
     /**
-     * Retrieve languages.
+     * Retrieves the list of languages accepted by the visitor's browser.
      *
+     * @return string[] List of language tags (e.g. ['en-US', 'fr'])
      *
-     * @throws \Exception
+     * @throws \Exception If the configured UA parser driver cannot be instantiated
      */
     public function languages(): array
     {
         return $this->get_driver_instance()->languages();
     }
     /**
+     * Resolves geographic location data for the given IP address using the configured GeoIP resolver.
      *
+     * @param string $ip IPv4 or IPv6 address to resolve
+     *
+     * @return array<string, mixed>|null Location data map, or null if GeoIP is disabled or resolution fails
      */
     public function resolve(string $ip): ?array
     {
@@ -190,8 +212,11 @@ class Visitor implements User_Agent_Parser, Geo_Ip_Resolver
         }
         return $this->get_resolver_instance()->resolve($ip);
     }
+
     /**
+     * Resolves geographic location data for the current visitor's IP address.
      *
+     * @return array<string, mixed>|null Location data map, or null if IP is unavailable or GeoIP is disabled
      */
     public function geolocation(): ?array
     {
@@ -217,7 +242,12 @@ class Visitor implements User_Agent_Parser, Geo_Ip_Resolver
         return $this->visitor;
     }
     /**
-     * Create a visit log.
+     * Records a visit log entry for the current request, optionally associated with a visited model.
+     * Skips logging if the request path matches an excluded pattern in the config.
+     *
+     * @param Model|null $model Optional Eloquent model being visited (e.g. a Product or Page)
+     *
+     * @return Visit|null The created visit record, or null if logging was skipped
      */
     public function visit(Model $model = null)
     {
@@ -233,19 +263,24 @@ class Visitor implements User_Agent_Parser, Geo_Ip_Resolver
         return Visit::create($data);
     }
     /**
-     * Retrieve online visitors.
+     * Retrieves all visitors currently online for a given model class.
      *
-     * @param int $seconds
+     * @param string $model   Fully-qualified Eloquent model class name (must use the online() scope)
+     * @param int    $seconds Number of seconds within which a visit is considered "online" (default 180)
+     *
+     * @return \Illuminate\Database\Eloquent\Collection Collection of online visitor models
      */
     public function online_visitors(string $model, $seconds = 180)
     {
         return app($model)->online()->get();
     }
     /**
-     * Determine if given visitor or current one is online.
+     * Determines whether the given visitor (or the current authenticated visitor) is online.
      *
-     * @param int $seconds
-     * @return bool
+     * @param Model|null $visitor The visitor model to check; defaults to the current visitor if null
+     * @param int        $seconds Number of seconds within which a visit is considered "online" (default 180)
+     *
+     * @return bool True if the visitor has a visit record within the given window, false otherwise
      */
     public function is_online(?Model $visitor = null, $seconds = 180)
     {
